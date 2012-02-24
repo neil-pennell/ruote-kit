@@ -31,17 +31,32 @@ require 'ruote-kit'
 
 # ruote
 
-require 'ruote/storage/fs_storage'
+# require 'ruote/storage/fs_storage'
+# 
+# RuoteKit.engine = Ruote::Engine.new(
+#   Ruote::Worker.new(
+#     Ruote::FsStorage.new(
+#       "ruote_work_#{RuoteKit.env}")))
+# 
+# RuoteKit.engine.register do
+#   catchall
+# end
 
-RuoteKit.engine = Ruote::Engine.new(
-  Ruote::Worker.new(
-    Ruote::FsStorage.new(
-      "ruote_work_#{RuoteKit.env}")))
-
-RuoteKit.engine.register do
-  catchall
+c = ActiveRecord::Base.configurations[RuoteKit.env]
+connectionString = "postgres://#{c["username"]}:#{c["password"]}@#{c["host"]}/#{c["database"]}"
+puts connectionString
+sequel = Sequel.connect(connectionString)
+begin
+  Ruote::Sequel.create_table(sequel)
+rescue
+  puts "worked"
 end
 
+opts = {'remote_definition_allowed' => true}
+
+RuoteKit.engine = Ruote::Engine.new(
+    Ruote::Worker.new(
+        Ruote::Sequel::Storage.new(sequel, opts)))
 
 # redirecting / to /_ruote (to avoid issue reports from new users)
 
