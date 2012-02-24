@@ -6,4 +6,4 @@ ruote_work*/
 doc/*
 pkg/*
 .bundle/*
-nbproject/*
+nbproject/*:
