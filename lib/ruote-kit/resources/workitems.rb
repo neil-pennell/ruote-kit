@@ -22,7 +22,8 @@ class RuoteKit::Application
     query['skip'] = @skip
     query['limit'] = @limit
 
-    @workitems = RuoteKit.engine.storage_participant.query(query)
+    # @workitems = RuoteKit.engine.storage_participant.query(query)
+    @workitems = RuoteKit.engine.storage_participant()
 
     respond_with :workitems
   end
